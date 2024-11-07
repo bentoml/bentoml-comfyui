@@ -1,0 +1,26 @@
+[project]
+name = "bentoml-comfyui"
+description = "BentoML extensions for ComfyUI"
+readme = "README.md"
+authors = [
+    { name = "Frost Ming", email = "frost@bentoml.com" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "bentoml>=1.3.5",
+    "comfyui-idl>=0.0.1",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/bentoml/bentoml-comfyui"
+
+[project.entry-points."bentoml.commands"]
+comfyui = "bentoml_comfyui.cli:comfyui_command"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.version]
+source = "scm"
