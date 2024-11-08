@@ -39,9 +39,12 @@ class ComfyUIService:
         ctx: bentoml.Context,
         **kwargs: t.Any,
     ) -> Path:
-        return self.comfy_proc.run_workflow(
+        ret = self.comfy_proc.run_workflow(
             workflow, temp_dir=ctx.temp_dir, timeout=REQUEST_TIMEOUT, **kwargs
         )
+        if isinstance(ret, list):
+            ret = ret[-1]
+        return ret
 
     @bentoml.on_shutdown
     def on_shutdown(self):
