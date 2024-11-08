@@ -101,6 +101,7 @@ def build(
             name=name,
             version=version,
             build_ctx=temp_dir,
+            docker={"system_packages": ["git"]},
             python={"requirements_txt": "requirements.txt", "lock_packages": False},
             include=["service.py", "workflow.json", "requirements.txt"],
         )
