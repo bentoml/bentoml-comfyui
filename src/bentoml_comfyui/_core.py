@@ -9,7 +9,7 @@ import bentoml
 
 # Function to ignore the 'input' and 'output' directories during copy
 def _ignore_dirs(src, names):
-    ignore_list = ["input", "output", ".venv", ".git", "__pycache__"]
+    ignore_list = ["output", ".venv", ".git", "__pycache__"]
     return [item for item in names if item in ignore_list]
 
 
@@ -27,8 +27,7 @@ def pack_model(name: str, workspace: str) -> str:
         # Copy the entire directory tree from source to destination, ignoring 'input' and 'output'
         shutil.copytree(workspace, model.path, ignore=_ignore_dirs, dirs_exist_ok=True)
 
-        # Create empty input, output, and output/exp_data directories because they are required by ComfyUI
-        os.makedirs(os.path.join(model.path, "input"), exist_ok=True)
+        # Create empty output, and output/exp_data directories because they are required by ComfyUI
         os.makedirs(os.path.join(model.path, "output"), exist_ok=True)
         os.makedirs(os.path.join(model.path, "output", "exp_data"), exist_ok=True)
 
