@@ -101,7 +101,7 @@ def build(
             name=name,
             version=version,
             build_ctx=temp_dir,
-            python={"requirements_txt": "requirements.txt"},
+            python={"requirements_txt": "requirements.txt", "lock_packages": False},
             include=["service.py", "workflow.json", "requirements.txt"],
         )
     rich.print(

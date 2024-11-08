@@ -17,7 +17,7 @@ with open(WORKFLOW_FILE, "r") as f:
 InputModel = comfyui_idl.generate_input_model(workflow)
 
 
-@bentoml.service(name={name!r})
+@bentoml.service(name={name!r}, traffic={'timeout': REQUEST_TIMEOUT * 2})
 class ComfyUIService:
     pipeline = bentoml.models.BentoModel({model_tag!r})
 
