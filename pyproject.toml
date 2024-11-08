@@ -11,6 +11,13 @@ dependencies = [
     "comfyui-idl>=0.0.1",
 ]
 dynamic = ["version"]
+keywords = ["bentoml", "comfyui"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
 
 [project.urls]
 Homepage = "https://github.com/bentoml/bentoml-comfyui"
