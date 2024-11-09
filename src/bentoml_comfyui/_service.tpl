@@ -17,16 +17,37 @@ with open(WORKFLOW_FILE, "r") as f:
 InputModel = comfyui_idl.generate_input_model(workflow)
 
 
+COPY_THRESHOLD = 10 * 1024 * 1024
+
+
+def recursive_copy(src, dst):
+    if os.path.isdir(src):
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+            recursive_copy(s, d)
+    else:
+        if os.path.getsize(src) > COPY_THRESHOLD:
+            os.symlink(src, dst)
+        else:
+            shutil.copy2(src, dst)
+
+
 @bentoml.service(name={name!r}, traffic={{'timeout': REQUEST_TIMEOUT * 2}})
 class ComfyUIService:
     pipeline = bentoml.models.BentoModel({model_tag!r})
 
     def __init__(self):
+        comfy_workspace = os.path.join(os.getcwd(), "comfy_workspace")
+        recursive_copy(self.pipeline.path, comfy_workspace)
+
         comfy_output_dir = os.path.join(os.getcwd(), "comfy_output")
         comfy_temp_dir = os.path.join(os.getcwd(), "comfy_temp")
 
         self.comfy_proc = comfyui_idl.run.WorkflowRunner(
-            self.pipeline.path,
+            comfy_workspace,
             comfy_output_dir,
             comfy_temp_dir,
         )
