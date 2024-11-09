@@ -101,7 +101,7 @@ def build(
             name=name,
             version=version,
             build_ctx=temp_dir,
-            docker={"system_packages": ["git"]},
+            docker={"system_packages": ["git", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "ffmpeg"]},
             python={"requirements_txt": "requirements.txt", "lock_packages": False},
             include=["service.py", "workflow.json", "requirements.txt"],
         )
