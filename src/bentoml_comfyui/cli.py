@@ -71,9 +71,15 @@ def pack(name: str, version: str | None, workspace: str):
     type=str,
     help="The Python interpreter path where ComfyUI is running. Defaults to the current Python interpreter",
 )
+@click.option(
+    "--system-packages",
+    type=str,
+    multiple=True,
+    help="Additional system packages to install in the Docker image",
+)
 @click.argument("workflow", required=True, type=click.Path(dir_okay=False, exists=True))
 def build(
-    name: str, version: str | None, model: str, python: str | None, workflow: str
+    name: str, version: str | None, model: str, python: str | None, system_packages: tuple[str, ...], workflow: str
 ):
     """Build a BentoML service from a ComfyUI workspace"""
     from importlib.resources import read_text
@@ -101,7 +107,17 @@ def build(
             name=name,
             version=version,
             build_ctx=temp_dir,
-            docker={"system_packages": ["git", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "ffmpeg"]},
+            docker={
+                "system_packages": [
+                    "git",
+                    "libglib2.0-0",
+                    "libsm6",
+                    "libxrender1",
+                    "libxext6",
+                    "ffmpeg",
+                    *system_packages,
+                ]
+            },
             python={"requirements_txt": "requirements.txt", "lock_packages": False},
             include=["service.py", "workflow.json", "requirements.txt"],
         )
