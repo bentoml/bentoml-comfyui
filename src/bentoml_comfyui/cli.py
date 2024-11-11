@@ -127,7 +127,7 @@ def build(
                     *system_packages,
                 ]
             },
-            python={"requirements_txt": "requirements.txt", "lock_packages": False},
+            python={"requirements_txt": "requirements.txt", "lock_packages": True},
             include=["service.py", "workflow.json", "requirements.txt"],
         )
     rich.print(
