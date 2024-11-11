@@ -28,8 +28,7 @@ def pack_model(name: str, workspace: str) -> str:
         shutil.copytree(workspace, model.path, ignore=_ignore_dirs, dirs_exist_ok=True)
 
         # Create empty output, and output/exp_data directories because they are required by ComfyUI
-        os.makedirs(os.path.join(model.path, "output"), exist_ok=True)
-        os.makedirs(os.path.join(model.path, "output", "exp_data"), exist_ok=True)
+        os.makedirs(os.path.join(model.path, "output/exp_data"), exist_ok=True)
 
     return str(model.tag)
 
