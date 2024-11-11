@@ -47,6 +47,12 @@ def pack(name: str, version: str | None, workspace: str):
     rich.print(
         f"✅ [green]Successfully packed ComfyUI workspace {workspace!r} to BentoML model {tag}[/]"
     )
+    rich.print(
+        "[blue]Next step, build a bento with the workspace:\n"
+        "    $ bentoml comfyui build --model {tag}\n"
+        "Or, build and push to the cloud in one go:\n"
+        "    $ bentoml comfyui build --push --model {tag}[/]"
+    )
 
 
 @comfyui_command.command()
@@ -83,9 +89,19 @@ def pack(name: str, version: str | None, workspace: str):
     multiple=True,
     help="Additional Python packages to install in the Docker image",
 )
+@click.option(
+    "--push", is_flag=True, default=False, help="Push the built bento to the BentoCloud"
+)
 @click.argument("workflow", required=True, type=click.Path(dir_okay=False, exists=True))
 def build(
-    name: str, version: str | None, model: str, python: str | None, system_packages: tuple[str, ...], extra_python_packages: tuple[str, ...], workflow: str
+    name: str,
+    version: str | None,
+    model: str,
+    python: str | None,
+    system_packages: tuple[str, ...],
+    extra_python_packages: tuple[str, ...],
+    push: bool,
+    workflow: str,
 ):
     """Build a BentoML service from a ComfyUI workspace"""
     from importlib.resources import read_text
@@ -133,3 +149,12 @@ def build(
     rich.print(
         f"✅ [green]Successfully built Bento {bento.tag} from ComfyUI workflow {workflow!r}[/]"
     )
+    if push:
+        bentoml.push(bento)
+        next_steps = [
+            "[blue]Next steps:",
+            f"\n\n* Deploy to BentoCloud:\n    $ bentoml deploy {bento.tag} -n ${{DEPLOYMENT_NAME}}",
+            "\n\n* Update an existing deployment on BentoCloud:\n"
+            f"    $ bentoml deployment update --bento {bento.tag} ${{DEPLOYMENT_NAME}}[/]",
+        ]
+        rich.print("".join(next_steps))
