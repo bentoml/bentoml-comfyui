@@ -77,9 +77,15 @@ def pack(name: str, version: str | None, workspace: str):
     multiple=True,
     help="Additional system packages to install in the Docker image",
 )
+@click.option(
+    "--extra-python-packages",
+    type=str,
+    multiple=True,
+    help="Additional Python packages to install in the Docker image",
+)
 @click.argument("workflow", required=True, type=click.Path(dir_okay=False, exists=True))
 def build(
-    name: str, version: str | None, model: str, python: str | None, system_packages: tuple[str, ...], workflow: str
+    name: str, version: str | None, model: str, python: str | None, system_packages: tuple[str, ...], extra_python_packages: tuple[str, ...], workflow: str
 ):
     """Build a BentoML service from a ComfyUI workspace"""
     from importlib.resources import read_text
@@ -97,6 +103,8 @@ def build(
         rich.print("📂 [blue]Creating requirements.txt[/]")
         with open(parent.joinpath("requirements.txt"), "w") as f:
             f.write(get_requirements(python))
+            for package in extra_python_packages:
+                f.write(f"\n{package}")
         rich.print("📂 [blue]Creating service.py[/]")
         with open(parent.joinpath("service.py"), "w") as f:
             f.write(service_template.format(name=name, model_tag=model))
@@ -115,6 +123,7 @@ def build(
                     "libxrender1",
                     "libxext6",
                     "ffmpeg",
+                    "libstdc++-12-dev",
                     *system_packages,
                 ]
             },

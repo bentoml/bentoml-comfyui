@@ -41,14 +41,14 @@ class ComfyUIService:
     pipeline = bentoml.models.BentoModel({model_tag!r})
 
     def __init__(self):
-        comfy_workspace = os.path.join(os.getcwd(), "comfy_workspace")
-        recursive_copy(self.pipeline.path, comfy_workspace)
+        self.comfy_workspace = os.path.join(os.getcwd(), "comfy_workspace")
+        recursive_copy(self.pipeline.path, self.comfy_workspace)
 
         comfy_output_dir = os.path.join(os.getcwd(), "comfy_output")
         comfy_temp_dir = os.path.join(os.getcwd(), "comfy_temp")
 
         self.comfy_proc = comfyui_idl.run.WorkflowRunner(
-            comfy_workspace,
+            self.comfy_workspace,
             comfy_output_dir,
             comfy_temp_dir,
         )
@@ -71,3 +71,4 @@ class ComfyUIService:
     @bentoml.on_shutdown
     def on_shutdown(self):
         self.comfy_proc.stop()
+        shutil.rmtree(self.comfy_workspace)
