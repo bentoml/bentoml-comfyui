@@ -6,19 +6,23 @@ import shutil
 from pathlib import Path
 
 import bentoml
+import fastapi
 import comfyui_idl
 import comfyui_idl.run
 
 REQUEST_TIMEOUT = 360
 WORKFLOW_FILE = os.path.join(os.path.dirname(__file__), "workflow.json")
+COPY_THRESHOLD = 10 * 1024 * 1024
 
 with open(WORKFLOW_FILE, "r") as f:
     workflow = json.load(f)
 
 InputModel = comfyui_idl.generate_input_model(workflow)
+app = fastapi.FastAPI()
 
-
-COPY_THRESHOLD = 10 * 1024 * 1024
+@app.get("/workflow.json")
+def workflow_json():
+    return workflow
 
 
 def recursive_copy(src, dst):
@@ -35,7 +39,7 @@ def recursive_copy(src, dst):
         else:
             shutil.copy2(src, dst)
 
-
+@bentoml.mount_asgi_app(app, path="/comfy")
 @bentoml.service(name={name!r}, traffic={{'timeout': REQUEST_TIMEOUT * 2}})
 class ComfyUIService:
     pipeline = bentoml.models.BentoModel({model_tag!r})
